@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class BlockchainController {
 
     private final Blockchain blockchain;
@@ -31,7 +32,6 @@ public class BlockchainController {
         System.out.println("Previous Hash: " + latestBlock.getPreviousHash());
         System.out.println("Hash: " + latestBlock.getHash());
 
-        // Send back a JSON response
         Map<String, String> response = new HashMap<>();
         response.put("message", "Sensor data added to the blockchain.");
         return response;
@@ -60,7 +60,6 @@ public class BlockchainController {
             System.out.println("Hash: " + block.getHash());
             System.out.println("-------------------------");
         }
-
         return blockchain.getChain();
     }
 }

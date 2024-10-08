@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .data-container {
+            margin-top: 20px;
+            display: flex;
+            align-items: center; /* Align items vertically */
+            flex-wrap: wrap; /* Allow blocks to wrap to the next line */
+            gap: 15px; /* Space between blocks */
+        }
+        .data-block {
+            background-color: #007bff; /* Blue background */
+            color: white; /* White text color */
+            padding: 15px;
+            border-radius: 5px;
+            width: 200px; /* Set a fixed width for blocks */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .data-block h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .hash {
+            color: white; /* White color for hash */
+        }
+        .arrow {
+            color: black; /* Black color for arrows */
+            font-size: 24px; /* Size of the arrow */
+            margin: 0 10px; /* Space around the arrow */
+        }
+        .heading{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="heading">Sensor Data</h1>
+    <div class="data-container" id="sensorDataContainer">
+        <div class="data-block">
+            <p>Waiting for data...</p>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:3000/latest-sensor-data";
+        const sensorDataArray = [];  // Array to store all sensor data
+
+        async function fetchSensorData() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                storeAndDisplaySensorData(data);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        function storeAndDisplaySensorData(data) {
+            const gasValue = data.data.split(', ')[0].split(': ')[1];
+            const pressure = data.data.split(', ')[1].split(': ')[1];
+            const temperature = data.data.split(', ')[2].split(': ')[1];
+
+            // Store the new data in the array
+            sensorDataArray.push({
+                index: data.index,
+                gasValue,
+                pressure,
+                temperature,
+                hash: data.hash,
+                timestamp: new Date().toLocaleString() // Adding timestamp for reference
+            });
+
+            // Display all stored data in blocks
+            const sensorDataContainer = document.getElementById("sensorDataContainer");
+            sensorDataContainer.innerHTML = ''; // Clear existing data for re-rendering
+            
+            // Loop through stored data to create blocks and arrows
+            sensorDataArray.forEach((item, index) => {
+                const block = document.createElement("div");
+                block.classList.add("data-block");
+                block.innerHTML = `
+                    <h3>Block Index: ${item.index}</h3>
+                    <p><strong>MQ2 Gas Value:</strong> ${item.gasValue}</p>
+                    <p><strong>Pressure:</strong> ${item.pressure} hPa</p>
+                    <p><strong>Temperature:</strong> ${item.temperature} °C</p>
+                    <p class="hash"><strong>Hash:</strong> ${item.hash}</p>
+                    <p><strong>Timestamp:</strong> ${item.timestamp}</p>
+                `;
+                sensorDataContainer.appendChild(block);
+                
+                // Add an arrow if it's not the last block
+                if (index < sensorDataArray.length - 1) {
+                    const arrow = document.createElement("span");
+                    arrow.classList.add("arrow");
+                    arrow.innerHTML = '➜'; // Arrow symbol
+                    sensorDataContainer.appendChild(arrow);
+                }
+            });
+        }
+
+        // Fetch sensor data every 5 seconds
+        setInterval(fetchSensorData, 5000);
+        // Initial fetch
+        fetchSensorData();
+    </script>
+</body>
+</html>
