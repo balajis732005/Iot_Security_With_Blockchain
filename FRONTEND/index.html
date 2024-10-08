@@ -12,16 +12,16 @@
         .data-container {
             margin-top: 20px;
             display: flex;
-            align-items: center; /* Align items vertically */
-            flex-wrap: wrap; /* Allow blocks to wrap to the next line */
-            gap: 15px; /* Space between blocks */
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 15px; 
         }
         .data-block {
-            background-color: #007bff; /* Blue background */
-            color: white; /* White text color */
+            background-color: #007bff; 
+            color: white; 
             padding: 15px;
             border-radius: 5px;
-            width: 200px; /* Set a fixed width for blocks */
+            width: 200px; 
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         .data-block h3 {
@@ -29,12 +29,12 @@
             font-size: 1.2em;
         }
         .hash {
-            color: white; /* White color for hash */
+            color: white; 
         }
         .arrow {
-            color: black; /* Black color for arrows */
-            font-size: 24px; /* Size of the arrow */
-            margin: 0 10px; /* Space around the arrow */
+            color: black; 
+            font-size: 24px; 
+            margin: 0 10px;
         }
         .heading{
             text-align: center;
@@ -51,7 +51,7 @@
 
     <script>
         const apiUrl = "http://localhost:3000/latest-sensor-data";
-        const sensorDataArray = [];  // Array to store all sensor data
+        const sensorDataArray = [];  
 
         async function fetchSensorData() {
             try {
@@ -71,21 +71,18 @@
             const pressure = data.data.split(', ')[1].split(': ')[1];
             const temperature = data.data.split(', ')[2].split(': ')[1];
 
-            // Store the new data in the array
             sensorDataArray.push({
                 index: data.index,
                 gasValue,
                 pressure,
                 temperature,
                 hash: data.hash,
-                timestamp: new Date().toLocaleString() // Adding timestamp for reference
+                timestamp: new Date().toLocaleString() 
             });
 
-            // Display all stored data in blocks
             const sensorDataContainer = document.getElementById("sensorDataContainer");
-            sensorDataContainer.innerHTML = ''; // Clear existing data for re-rendering
+            sensorDataContainer.innerHTML = ''; 
             
-            // Loop through stored data to create blocks and arrows
             sensorDataArray.forEach((item, index) => {
                 const block = document.createElement("div");
                 block.classList.add("data-block");
@@ -98,20 +95,17 @@
                     <p><strong>Timestamp:</strong> ${item.timestamp}</p>
                 `;
                 sensorDataContainer.appendChild(block);
-                
-                // Add an arrow if it's not the last block
+
                 if (index < sensorDataArray.length - 1) {
                     const arrow = document.createElement("span");
                     arrow.classList.add("arrow");
-                    arrow.innerHTML = '➜'; // Arrow symbol
+                    arrow.innerHTML = '➜'; 
                     sensorDataContainer.appendChild(arrow);
                 }
             });
         }
 
-        // Fetch sensor data every 5 seconds
         setInterval(fetchSensorData, 5000);
-        // Initial fetch
         fetchSensorData();
     </script>
 </body>
